@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "@sendgrid/mail": "^6.3.1",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",

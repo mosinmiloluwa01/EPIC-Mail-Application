@@ -9,5 +9,7 @@ user.post('/signup', ValidateUser.userInput, UserController.createUser);
 user.post('/login', ValidateUser.userInputLogin, UserController.login);
 user.patch('/users/upload', ValidateUser.imageInput, checkToken, UserController.imageUpload);
 user.get('/users/profile', checkToken, UserController.getAProfileImage);
+user.post('/users/recoverPassword', ValidateUser.validateEmail, UserController.recoverPassword);
+user.post('/users/:token/resetPassword', UserController.resetPassword);
 
 export default user;
