@@ -188,8 +188,14 @@ class UserController {
 
   static async resetPassword(req, res) {
     const { token } = req.params;
-    const { password } = req.body;
+    const { password, confirmpassword } = req.body;
 
+    if (password !== confirmpassword) {
+      return res.status(400).send({
+        status: 400,
+        message: 'password and confirm password must match',
+      });
+    }
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
       if (err) {
         return res.status(400).send({
