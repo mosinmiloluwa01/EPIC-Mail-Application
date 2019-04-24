@@ -179,7 +179,7 @@ class UserController {
     sendGrid.send(mail)
       .then(() => {
         return res.status(200).json({
-          success: 200,
+          status: 200,
           message: 'A verification link has been sent to you. Please check your email',
         });
       })
