@@ -13,7 +13,7 @@ import app from '../server/server';
 const expect = chai.expect;
 // const should = chai.should();
 chai.use(chaiHttp);
-let v1token; let v2token; let v3token;
+let v1token; let v2token; let v3token; const v4token = 'invalidtoken';
 describe('/api/v1/auth/signup', () => {
   it('should not accept null values', (done) => {
     chai.request(app)
@@ -1457,6 +1457,70 @@ describe('/api/v2/auth/users/picture', () => {
     chai.request(app)
       .get('/api/v2/auth/users/picture')
       .set({ Authorization: v2token, Accept: 'application/json' })
+      .end((err, res) => {
+        if (!res) {
+          expect(res).to.have.status(200);
+        }
+        done();
+      });
+  });
+});
+
+describe('/api/v2/auth/users/recoverPassword', () => {
+  it('should not reset password without email', (done) => {
+    chai.request(app)
+      .post('/api/v2/auth/users/recoverPassword')
+      .send({email: ''})
+      .end((err, res) => {
+        if (!res) {
+          expect(res).to.have.status(400)
+        }
+        done();
+      });
+  });
+
+  it('should recieve a link that navigates to password reset', (done) => {
+    chai.request(app)
+      .post('/api/v2/auth/users/recoverPassword')
+      .send({email: 't@epic.com'})
+      .end((err, res) => {
+        if (!res) {
+          expect(res).to.have.status(200);
+        }
+        done();
+      });
+  });
+});
+
+describe('/api/v2/auth/users/resetPassword', () => {
+  it('should not reset password without password', (done) => {
+    chai.request(app)
+      .post(`/api/v2/auth/users/${v2token}/resetPassword`)
+      .send({password: ''})
+      .end((err, res) => {
+        if (!res) {
+          expect(res).to.have.status(400)
+        }
+        done();
+      });
+  });
+
+  it('should not reset password without token', (done) => {
+    chai.request(app)
+      .post(`/api/v2/auth/users/${v4token}/resetPassword`)
+      .send({password: '565756378'})
+      .end((err, res) => {
+        if (!res) {
+          expect(res).to.have.status(400)
+        }
+        done();
+      });
+  });
+
+  it('should recieve a link that navigates to password reset', (done) => {
+    chai.request(app)
+      .post(`/api/v2/auth/users/${v2token}/resetPassword`)
+      .send({password: 'abcdef'})
       .end((err, res) => {
         if (!res) {
           expect(res).to.have.status(200);

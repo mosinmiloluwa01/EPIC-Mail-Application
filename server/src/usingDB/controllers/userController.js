@@ -1,3 +1,5 @@
+/* eslint-disable arrow-parens */
+/* eslint-disable space-infix-ops */
 /* eslint-disable no-undef */
 /* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
@@ -5,10 +7,16 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable prefer-destructuring */
 import jwt from 'jsonwebtoken';
+import sendGrid from '@sendgrid/mail';
+import env from 'dotenv';
 import db from '../db';
 import UserModel from '../../models/model';
+import { checkToken } from '../../middleware';
 import { uploader, cloudinaryConfig } from '../../../config/cloudinaryConfig';
 import { dataUri } from '../../middleware/multer';
+
+env.config();
+sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 class UserController {
   static async createUser(req, res) {
@@ -133,6 +141,85 @@ class UserController {
     return res.status(200).send({
       success: 200,
       data: rows[0],
+    });
+  }
+
+  static async recoverPassword(req, res) {
+    const { email } = req.body;
+
+    const userEmail = 'SELECT * FROM users where email=$1';
+
+    const { rows } = await db.query(userEmail, [email]);
+    if (!rows[0]) {
+      return res.status(404).send({
+        status: 404,
+        message: 'email does not exist',
+      });
+    }
+    const token = jwt.sign(
+      { email },
+      process.env.SECRET,
+      { expiresIn: '1h' },
+    );
+    const reset = `${process.env.RESET_URL}?${token}`;
+    const message = `
+                    <p> Hello, </p>
+                    <p> Please follow the link below to reset your password </p>
+                    <a href="${reset}">${reset}</a>
+                    <p>Thank you. <br>
+                    <b> Epic Mail Team. </b>
+                    </p>
+                    `;
+    const mail = {
+      to: email,
+      from: 'noreply@epicmail.com',
+      subject: 'EPIC Mail password reset',
+      html: message,
+    };
+    sendGrid.send(mail)
+      .then(() => {
+        return res.status(200).json({
+          success: 200,
+          message: 'A verification link has been sent to you. Please check your email',
+        });
+      })
+      .catch(err => { return res.status(500).send(err)});
+  }
+
+  static async resetPassword(req, res) {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(400).send({
+          status: 400,
+          message: 'Token is not valid',
+        });
+      }
+      req.decodedMessage = decoded;
+    });
+    const userEmail = 'SELECT * FROM users where email=$1';
+
+    const { rows } = await db.query(userEmail, [req.decodedMessage.email]);
+    if (!rows[0]) {
+      return res.status(404).send({
+        status: 404,
+        message: 'email does not exist',
+      });
+    }
+    const hashedPassword = UserModel.hashPassword(password);
+    const pwd = 'UPDATE users SET password=$1 WHERE email=$2 RETURNING *';
+    const { rows: output } = await db.query(pwd, [hashedPassword, req.decodedMessage.email]);
+    if (!output[0]) {
+      return res.status(400).send({
+        status: 400,
+        message: 'user does not exist',
+      });
+    }
+    return res.status(200).send({
+      status: 200,
+      message: 'password has been reset successfully',
     });
   }
 }

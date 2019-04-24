@@ -10,7 +10,7 @@
     }
   },
   "host": "mosinmiloluwa-app.herokuapp.com",
-  "basePath": "/api/v1",
+  "basePath": "/api/v2",
   "tags": [
     {
       "name": "Users",
@@ -86,28 +86,23 @@
         }
       }
     },
-    "/messages/createMessage": {
+    "/messages": {
+      "parameters": [
+         {
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
+        }
+      ],
       "post": {
         "tags": [
           "Message"
         ],
-        "description": "create a message",
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "description": "creates an email message",
-            "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
+        "summary": "Get all messages per user",
         "responses": {
           "200": {
-            "description": "message info",
+            "description": "all messages per user",
             "schema": {
               "$ref": "#/definitions/Message"
             }
@@ -115,14 +110,13 @@
         }
       }
     },
-    "/messages/allMessagesPerUser{senderId}": {
+    "/messages": {
       "parameters": [
-        {
-          "name": "senderId",
-          "in": "path",
-          "required": true,
-          "description": "ID of sender that we want to find",
-          "type": "number"
+         {
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
         }
       ],
       "get": {
@@ -140,7 +134,7 @@
         }
       }
     },
-    "/messages/getAMessage/{messageId}": {
+    "/messages/{messageId}": {
       "parameters": [
         {
           "name": "messageId",
@@ -148,6 +142,12 @@
           "required": true,
           "description": "ID of message that we want to find",
           "type": "number"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
         }
       ],
       "get": {
@@ -165,14 +165,13 @@
         }
       }
     },
-    "/messages/unreadMessagesPerUser/{recieverId}": {
+    "/messages/unread": {
       "parameters": [
         {
-          "name": "recieverId",
-          "in": "path",
-          "required": true,
-          "description": "ID of reciever that we want to find",
-          "type": "number"
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
         }
       ],
       "get": {
@@ -190,14 +189,13 @@
         }
       }
     },
-    "/messages/getMessagesSentByAUser/{senderId}": {
+    "/messages/sent": {
       "parameters": [
         {
-          "name": "senderId",
-          "in": "path",
-          "required": true,
-          "description": "ID of sender that we want to find",
-          "type": "number"
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
         }
       ],
       "get": {
@@ -215,32 +213,7 @@
         }
       }
     },
-    "/messages/users/{userId}": {
-      "parameters": [
-        {
-          "name": "userId",
-          "in": "path",
-          "required": true,
-          "description": "ID of sender that we want to find",
-          "type": "number"
-        }
-      ],
-      "get": {
-        "tags": [
-          "Message"
-        ],
-        "summary": "Get a particular user's email",
-        "responses": {
-          "200": {
-            "description": "Get a particular user's email",
-            "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        }
-      }
-    },
-    "/messages/deleteAMessage/{messageId}": {
+    "/messages/{messageId}": {
       "parameters": [
         {
           "name": "messageId",
@@ -248,6 +221,12 @@
           "required": true,
           "description": "ID of sender that we want to find",
           "type": "number"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "description": "token",
+          "type": "string"
         }
       ],
       "delete": {
