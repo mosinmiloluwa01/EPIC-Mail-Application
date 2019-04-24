@@ -129,6 +129,33 @@ class ValidateUser {
       },
     });
   }
+
+  static validatePassword(request, response, next) {
+    const { password, confirmpassword } = request.body;
+
+    const data = {
+      password,
+      confirmpassword,
+    };
+
+    const rules = {
+      password: 'required|min:6',
+      confirmpassword: 'required|min:6',
+    };
+
+    const validation = new Validator(data, rules);
+
+    if (validation.passes()) {
+      return next();
+    }
+
+    return response.status(400).json({
+      status: 400,
+      data: {
+        errors: validation.errors.all(),
+      },
+    });
+  }
 }
 
 export default ValidateUser;
