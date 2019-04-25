@@ -164,8 +164,7 @@ class UserController {
     const reset = `${process.env.RESET_URL}?${token}`;
     const message = `
                     <p> Hello, </p>
-                    <p> Please follow the link below to reset your password </p>
-                    <a href="${reset}">${reset}</a>
+                    <p> Please click on <a href="${reset}">this link</a> to reset your password </p>
                     <p>Thank you. <br>
                     <b> Epic Mail Team. </b>
                     </p>
