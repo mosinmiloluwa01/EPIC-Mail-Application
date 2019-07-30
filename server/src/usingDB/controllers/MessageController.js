@@ -98,7 +98,7 @@ class MessageController {
                       left join user_groupings u on m.group_reciever = u.group_id
                       left join users s on m.sender = s.id
                       left join groups g on m.group_reciever = g.id
-                      where m.id = $1 or m.reciever=$2 and m.is_deleted = $3 and m.message_type=$4`;
+                      where m.id = $1 and m.reciever=$2 and m.is_deleted = $3 and m.message_type=$4`;
     const updatestatus = 'UPDATE messages SET status=$1 WHERE id=$2 returning *';
     try {
       const { rows } = await db.query(messages, [req.params.id, req.decodedMessage.id, 'false', 'sent']);
