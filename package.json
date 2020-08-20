@@ -51,7 +51,7 @@
     "@babel/polyfill": "^7.2.5",
     "@sendgrid/mail": "^6.3.1",
     "babel-polyfill": "^6.26.0",
-    "bcrypt": "^3.0.4",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.14.0",
     "cors": "^2.8.5",
